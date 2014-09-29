@@ -17,7 +17,7 @@
                       :failure-mode    failure-mode)]
     (spyglass/bin-connection servers conn-factory)))
 
-(defrecord Memcached [servers username password failure-mode]
+(defrecord MemcachedClient [servers username password failure-mode]
   component/Lifecycle
   (start [component]
     (silence-spyglass-logger!)
@@ -29,7 +29,7 @@
       (spyglass/shutdown conn))
     (dissoc component :conn)))
 
-(defn memcached
+(defn memcached-client
   "Create a component that matches a Memcached connection under the :conn key.
 
   Accepts the options:
@@ -39,4 +39,4 @@
     :auth-type    - :cram-md5 or :plain
     :failure-mode - :redistribute, :retry or :cancel"
   [config]
-  (map->Memcached (merge {:failure-mode :redistribute} config)))
+  (map->MemcachedClient (merge {:failure-mode :redistribute} config)))

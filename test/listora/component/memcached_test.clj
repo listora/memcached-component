@@ -6,8 +6,8 @@
 
 ;; These tests assume memcached is started and listening on port 11211
 
-(deftest test-memcached
-  (let [component (memcached {:servers "127.0.0.1:11211"})]
+(deftest test-memcached-client
+  (let [component (memcached-client {:servers "127.0.0.1:11211"})]
     (testing "initial values"
       (is (= (:servers component) "127.0.0.1:11211"))
       (is (nil? (:conn component))))
