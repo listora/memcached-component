@@ -1,6 +1,6 @@
-(defproject memcached-component "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject listora/memcached-component "0.1.0-SNAPSHOT"
+  :description "A component for managing a connection to Memcached"
+  :url "https://github.com/listora/memcached-component"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :repositories {"spy-memcached" {:url "http://files.couchbase.com/maven2/"}}
