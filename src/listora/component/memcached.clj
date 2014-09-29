@@ -1,6 +1,7 @@
 (ns listora.component.memcached
   (:require [com.stuartsierra.component :as component]
-            [clojurewerkz.spyglass.client :as spyglass]))
+            [clojurewerkz.spyglass.client :as spyglass]
+            [taoensso.timbre :as log]))
 
 (defn- silence-spyglass-logger! []
   (System/setProperty "net.spy.log.LoggerImpl" "net.spy.memcached.compat.log.SunLogger")
@@ -23,9 +24,11 @@
     (silence-spyglass-logger!)
     (if (:conn component)
       component
-      (assoc component :conn (spyglass-connection component))))
+      (do (log/info "Starting MemcachedClient component…")
+          (assoc component :conn (spyglass-connection component)))))
   (stop [component]
     (when-let [conn (:conn component)]
+      (log/info "Stopping MemcachedClient component…")
       (spyglass/shutdown conn))
     (dissoc component :conn)))
 
