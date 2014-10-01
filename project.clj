@@ -1,4 +1,4 @@
-(defproject listora/memcached-component "0.1.0"
+(defproject listora/memcached-component "0.1.1"
   :description "A component for managing a connection to Memcached"
   :url "https://github.com/listora/memcached-component"
   :license {:name "Eclipse Public License"
