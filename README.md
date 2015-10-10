@@ -1,4 +1,4 @@
-# Memcached-Component
+# Memcached-Component [![Circle CI](https://circleci.com/gh/listora/memcached-component/tree/master.svg?style=svg)](https://circleci.com/gh/listora/memcached-component/tree/master)
 
 A [component][] that holds a [Spymemcached][] client connection,
 compatible with [Spyglass][]. Starting the component will create the
