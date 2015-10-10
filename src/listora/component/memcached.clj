@@ -3,7 +3,8 @@
             [com.stuartsierra.component :as component]))
 
 (defn- silence-spyglass-logger! []
-  (System/setProperty "net.spy.log.LoggerImpl" "net.spy.memcached.compat.log.SunLogger")
+  (System/setProperty "net.spy.log.LoggerImpl"
+                      "net.spy.memcached.compat.log.SunLogger")
   (spyglass/set-log-level! :severe))
 
 (defn- spyglass-connection
