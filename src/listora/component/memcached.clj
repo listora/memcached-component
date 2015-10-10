@@ -1,21 +1,43 @@
 (ns listora.component.memcached
-  (:require [com.stuartsierra.component :as component]
-            [clojurewerkz.spyglass.client :as spyglass]))
+  (:require [clojurewerkz.spyglass.client :as spyglass]
+            [com.stuartsierra.component :as component]))
 
 (defn- silence-spyglass-logger! []
-  (System/setProperty "net.spy.log.LoggerImpl" "net.spy.memcached.compat.log.SunLogger")
+  (System/setProperty "net.spy.log.LoggerImpl"
+                      "net.spy.memcached.compat.log.SunLogger")
   (spyglass/set-log-level! :severe))
 
-(defn- spyglass-connection
-  [{:keys [servers username password auth-type failure-mode]}]
-  (let [auth-descrip (if (and username password)
-                       (if auth-type
-                         (spyglass/auth-descriptor username password auth-type)
-                         (spyglass/auth-descriptor username password)))
-        conn-factory (spyglass/bin-connection-factory
-                      :auth-descriptor auth-descrip
-                      :failure-mode    failure-mode)]
-    (spyglass/bin-connection servers conn-factory)))
+(def ^:private default-options
+  {:auth-type :plain
+   :client spyglass/bin-connection
+   :conn-type :binary
+   :factory spyglass/bin-connection-factory
+   :failure-mode :redistribute})
+
+(defn- using-auth?
+  [{:keys [username password]}]
+  (or username password))
+
+(defn normalize-options
+  [config]
+  {:pre [(-> config :servers string?)]
+   :post [(:auth-type %) (:client %) (:conn-type %) (:factory %)
+          (-> % :servers string?)]}
+  (let [options (merge default-options config)
+        {:keys [username password auth-type conn-type]} options]
+    (cond-> options
+      (= conn-type :text)
+      (assoc :client spyglass/text-connection
+             :factory spyglass/text-connection-factory)
+
+      (using-auth? options)
+      (assoc :auth-descriptor (spyglass/auth-descriptor username
+                                                        password
+                                                        auth-type)))))
+
+(defn build-connection
+  [{:keys [client factory servers] :as component}]
+  (client servers (apply factory component)))
 
 (defrecord MemcachedClient [servers username password failure-mode]
   component/Lifecycle
@@ -23,7 +45,7 @@
     (silence-spyglass-logger!)
     (if (:conn component)
       component
-      (assoc component :conn (spyglass-connection component))))
+      (assoc component :conn (build-connection component))))
   (stop [component]
     (when-let [conn (:conn component)]
       (spyglass/shutdown conn))
@@ -37,6 +59,9 @@
     :username     - an optional username for authentication
     :password     - an optional password for authentication
     :auth-type    - :cram-md5 or :plain
+    :conn-type    - :text or :binary. Defaults to :binary
     :failure-mode - :redistribute, :retry or :cancel"
-  [config]
-  (map->MemcachedClient (merge {:failure-mode :redistribute} config)))
+  [options]
+  (-> options
+      normalize-options
+      map->MemcachedClient))
