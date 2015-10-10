@@ -1,6 +1,6 @@
 (ns listora.component.memcached
-  (:require [com.stuartsierra.component :as component]
-            [clojurewerkz.spyglass.client :as spyglass]))
+  (:require [clojurewerkz.spyglass.client :as spyglass]
+            [com.stuartsierra.component :as component]))
 
 (defn- silence-spyglass-logger! []
   (System/setProperty "net.spy.log.LoggerImpl" "net.spy.memcached.compat.log.SunLogger")
