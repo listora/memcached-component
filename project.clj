@@ -6,4 +6,5 @@
   :dependencies [[com.stuartsierra/component "0.2.2"]
                  [clojurewerkz/spyglass "1.1.0" :exclusions [spy/spymemcached]]
                  [org.clojure/clojure "1.6.0"]
-                 [net.spy/spymemcached "2.11.4"]])
+                 [net.spy/spymemcached "2.11.4"]]
+  :deploy-repositories [["releases" :clojars]])
